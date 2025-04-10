@@ -22,18 +22,37 @@ namespace Fcar.Tests
         }
 
         [Fact]
-        public async Task DeveAdicionarCliente()
+        public async Task DeveAdicionarMarca()
         {
             using var context = new AppDbContext(_options);
             var repo = new ModeloRepository(context);
 
-            var marca = new Marca { Name = "Teste" };
+            var marca = new Marca("Volkswagen");
 
             await repo.AddAsync(marca);
             var marcas = await repo.GetAllAsync();
 
             Assert.Single(marcas);
-            Assert.Equal("Teste", marcas.First().Name);
+            Assert.Equal("Volkswagen", marcas.First().Name);
+        }
+
+        [Fact]
+        public async Task DeveAdicionarModelo()
+        {
+            using var dbContext = new AppDbContext(_options);
+            var marca = new Marca("Honda");
+            dbContext.Marcas.Add(marca);
+            await dbContext.SaveChangesAsync();
+
+            var modelo = new Modelo("Civic", "Sedan compacto", marca.Id);
+            dbContext.Modelos.Add(modelo);
+            await dbContext.SaveChangesAsync();
+
+            var modelos = dbContext.Modelos.ToList();
+
+            Assert.Single(modelos);
+            Assert.Equal("Civic", modelos.First().Name);
+                
         }
     }
 }

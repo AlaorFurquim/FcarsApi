@@ -1,0 +1,21 @@
+﻿version: '3.4'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: "Al@25051949"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./sql/init:/docker-entrypoint-initdb.d
+
+  fcarsapi:
+    build:
+      context: .
+      dockerfile: FcarsApi/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - sqlserver
